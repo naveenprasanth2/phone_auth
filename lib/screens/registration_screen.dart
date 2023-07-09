@@ -1,6 +1,9 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:phone_auth/provider/auth_provider.dart';
 import 'package:phone_auth/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -79,6 +82,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     phoneNumberController.text = value;
                   });
                 },
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
                 decoration: InputDecoration(
                   prefixIcon: Container(
                     padding: const EdgeInsets.all(8.0),
@@ -143,7 +149,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: CustomButton(
                     text: "Login",
                     onPressed: () {
-                      Navigator.pop(context);
+                      sendPhoneNumber();
                     }),
               ),
             ]),
@@ -151,5 +157,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         )),
       ),
     );
+  }
+
+  void sendPhoneNumber() {
+    final ap = Provider.of<AuthProvider>(context, listen: false);
+    ap.signInWithPhone(context,
+        "+${selectedCountry.phoneCode}${phoneNumberController.text.trim()}");
   }
 }
